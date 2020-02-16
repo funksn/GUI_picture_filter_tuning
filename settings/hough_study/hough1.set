@@ -1,0 +1,49 @@
+#
+# -------------------------------
+# General:
+# -------------------------------
+#
+minRad = 3
+maxRad = 20
+crop_xmin = 0
+crop_xmax = 1000
+crop_ymin = 0
+crop_ymax = 500
+#
+# -------------------------------
+# Image Pre Processing:
+# -------------------------------
+#
+erode = 1
+dilate = 1
+canny = 1
+fft = 1
+f_cutoff = 2
+#
+# -------------------------------
+# Canny:
+# -------------------------------
+#
+lower_th_canny = 5
+upper_th_canny = 100
+filter = bilateral
+filterSettings = 0
+subtract_bg = 0
+#
+# -------------------------------
+# Hough:
+# -------------------------------
+#
+method = HOUGH_GRADIENT
+dp = 0.3
+minDist = 10
+par1 = 50
+par2 = 5
+image = None
+#
+# -------------------------------
+# second step circle detection:
+# -------------------------------
+#
+nphi = 11
+iteration = 1
