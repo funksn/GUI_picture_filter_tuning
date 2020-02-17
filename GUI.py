@@ -17,7 +17,7 @@ import json
 import os.path
 
 class MainWindow(QWidget):
-    def __init__(self, path='C:\\Users\Stefan\\bwSyncAndShare\\LehrlaborEnergietechnik (Matthias Probst)\\imgs\\LaserDuenn_Vol250_pd200\\Cam1_001A\\000005.tiff'):#'.\\pictures\\Cam1_0001A.b16'):
+    def __init__(self, path = None):
         super().__init__()
         self.useCanney = False
         self.Picturepath = path
@@ -42,17 +42,16 @@ class MainWindow(QWidget):
         selectButton.setToolTip('open dialog to select folder')
         selectButton.clicked.connect(self.on_click_select_button)
         # bar in which filepath is displayed and can be modified
-        qle = QLineEdit(self)
-        qle.displayText()
-        qle.setText(self.Picturepath)
-        qle.textChanged[str].connect(self.onChanged)
-        sublay.addWidget(qle)
+        self.qle = QLineEdit(self)
+        self.qle.displayText()
+        self.qle.setText(self.Picturepath)
+        self.qle.textChanged[str].connect(self.onChanged)
+        sublay.addWidget(self.qle)
         sublay.addWidget(selectButton)
         toolbarLayout.addLayout(sublay)
         self.overallLayout.addLayout(toolbarLayout)
         self.setLayout(self.overallLayout)
-        saveButton = QPushButton('save Filtersettings')
-        saveButton.clicked.connect(self.save_settings)
+
 
         self.cropping = OneFilter('crop picture', {'xCrop1': 0, 'xCrop2': 255, 'ycrop1': 0, 'ycrop2': 255},
                                   self)  # , self.wrapper_widget)
@@ -60,7 +59,6 @@ class MainWindow(QWidget):
         toolbarLayout.addWidget(self.filtersettings)
         toolbarLayout.addWidget(self.cropping)
         toolbarLayout.addWidget(applyButton)
-        toolbarLayout.addWidget(saveButton)
         # fin_butt_layout = QHBoxLayout()
         # settings.addLayout(fin_butt_layout)
         # toolbarLayout.addLayout(settings)
@@ -73,10 +71,8 @@ class MainWindow(QWidget):
         self.Picturepath = os.path.normpath(text.encode('raw_unicode_escape').decode())
 
     def on_click_select_button(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getOpenFileName()", "",
-                                                  "All Files (*);;Python Files (*.pco)", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
+                                                  "All Files (*);)")
         if fileName:
             self.Picturepath = fileName
             self.qle.setText(self.Picturepath)
@@ -105,11 +101,11 @@ class MainWindow(QWidget):
         picture = lib.CircleImage.CircleImage(os.path.abspath(self.Picturepath), settings)
         pic=picture.img
         print('picture loading worked')
-        fig, axs = plt.subplots(1,1)
-        img1 = axs.imshow(pic)
         if self.cropping.activateFilterCheckbox.isChecked():
             picture.cropPicture(int(settings['xCrop1']), int(settings['xCrop2']) ,int(settings['ycrop1']), int(settings['ycrop2']))
             pic = picture.img
+        fig, axs = plt.subplots(1, 1)
+        img1 = axs.imshow(pic)
         filters_to_apply = {}
         for key in self.filtersettings.filters.keys():                          #write filters which should be activated to new dict
             if self.filtersettings.filters[key].activateFilterCheckbox.isChecked():
@@ -322,9 +318,9 @@ class Settings(QTabWidget):
         scrollLayout.addWidget(self.open)
         self.filters.update({'open': self.open})
 
-        self.mean_thresholding = OneFilter('adaptive_threshold_mean', {'thres_mean_a':5, 'thres_mean_b':255})
-        scrollLayout.addWidget(self.mean_thresholding)
-        self.filters.update({'adaptive_threshold_mean': self.mean_thresholding})
+        #self.mean_thresholding = OneFilter('adaptive_threshold_mean', {'thres_mean_a':5, 'thres_mean_b':255})
+        #scrollLayout.addWidget(self.mean_thresholding)
+        #self.filters.update({'adaptive_threshold_mean': self.mean_thresholding})
 
 
     def tab3UI(self):
@@ -333,13 +329,13 @@ class Settings(QTabWidget):
         self.filters.update({'medfilt': self.Median})
         scrollLayout.addWidget(self.Median)
 
-        self.adaptive_threshold_gauss = OneFilter('Usse adaptive gauss', {'a':11, 'b':12})
-        self.filters.update({'adaptive_threshold_gauss': self.adaptive_threshold_gauss})
-        scrollLayout.addWidget(self.adaptive_threshold_gauss)
+        #self.adaptive_threshold_gauss = OneFilter('Usse adaptive gauss', {'a':11, 'b':12})
+        #self.filters.update({'adaptive_threshold_gauss': self.adaptive_threshold_gauss})
+        #scrollLayout.addWidget(self.adaptive_threshold_gauss)
 
-        self.adaptive_threshold_mean = OneFilter('Usse adaptive mean', {'a': 11, 'b': 12})
-        self.filters.update({'adaptive_threshold_mean': self.adaptive_threshold_mean})
-        scrollLayout.addWidget(self.adaptive_threshold_mean)
+        #self.adaptive_threshold_mean = OneFilter('Usse adaptive mean', {'a': 11, 'b': 12})
+        #self.filters.update({'adaptive_threshold_mean': self.adaptive_threshold_mean})
+        #scrollLayout.addWidget(self.adaptive_threshold_mean)
 
 
         self.bilateral = OneFilter('Bilateral', {'bilateral ksize':9, 'sigmaColor':10, 'sigmaSpace':10},self.tab3)#, self.wrapper_widget)
